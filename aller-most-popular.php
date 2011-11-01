@@ -20,9 +20,6 @@ class AllerMostPopularCategory
       wp_die('Couldn\'t find database.');
     else
       $this->wpdb = $wpdb;
-    
-    if (is_admin())
-      add_action('admin_menu', array($this, 'add_admin_page'));
   }
   
   /**
@@ -36,6 +33,12 @@ class AllerMostPopularCategory
    *  Render admin page.
    */
   public function render_admin_page() {
+    // To avoid issues with calling certain function before Wordpress loads.
+    if (isset($_POST['update-database']))
+      $this->update_database($_POST);
+    if (isset($_POST['savesettings']))
+      $this->save_settings($_POST);
+    
     require_once(dirname(__FILE__) . "/templates/admin-page.php");
   }
   
@@ -53,7 +56,46 @@ class AllerMostPopularCategory
     else
       return TRUE;
   }
+  
+  private function _validate($input) {
+    if (!wp_verify_nonce($input['aller-most-popular-category'], 'aller-most-popular'))
+      wp_die('Your nonce did not verify.');
+  }
+  
+  /**
+   *  Create table for Aller Most Popular in database. (only if it doesn't exists)
+   */
+  public function update_database($input) {
+    $this->_validate($input);
+    
+    if ($this->check_database())
+      wp_die('Database table already exists!');
+    
+    $sql = "CREATE TABLE `{$this->wpdb->prefix}aller_most_popular` (
+        `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `url` VARCHAR( 255 ) NOT NULL,
+        `views` SMALLINT UNSIGNED NOT NULL,
+        `category_slug` VARCHAR( 255 ) NOT NULL,
+        INDEX (`category_slug`),
+        UNIQUE (`url`))
+      ENGINE = INNODB;";
+    if (!$this->wpdb->query($sql))
+      wp_die('Database error! Something went wrong.');
+  }
+  
+  public function save_settings($input) {
+    $this->_validate($input);
+    
+    if (get_option('aller_most_popular_category'))
+      update_option('aller_most_popular_category', $input['category-slug']);
+    else
+      add_option('aller_most_popular_category', $input['category-slug']);
+  }
 }
 
 // Instanciate object to start application.
 $allerMostPopularCategory = new AllerMostPopularCategory($wpdb);
+if (is_admin()) {
+  add_action('admin_menu', array($allerMostPopularCategory, 'add_admin_page'));
+}
+  

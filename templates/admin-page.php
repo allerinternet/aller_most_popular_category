@@ -14,7 +14,12 @@
     <h2>Aller Most Popular</h2>
     
     <?php if (!$this->check_database()) : ?>
-      <div class="error">
+      <?php if (isset($_POST['update-database'])) : ?>
+        <!-- This should never happen! -->
+        <div class="error"><h3>Något gick fel!</h3></div>
+      <?php endif; ?>
+      
+      <div class="updated">
         <h3>Viktigt!</h3>
         <p>
           Databasen är inte anpassad för Aller Most Popular. Vill du aktivera Aller Most Popular
@@ -27,10 +32,17 @@
         </p>
       </div>
     <?php else : ?>
+      <?php if (isset($_POST['update-database']) || isset($_POST['savesettings'])) : ?>
+        <div class="updated">
+          <h3>Sparat!</h3>
+          <p>Uppdateringarna har sparats. Ta en kopp kaffe.</p>
+        </div>
+      <?php endif; ?>
+      
       <div class="metabox-holder">
           <div class="form-field form-required">
             <label for="category-slug">Kategorilänk</label><br />
-            <?php print network_site_url(); ?>kategori/<input type="text" name="category-slug" id="category-slug" size="20" value="" aria-required="true" style="width:200px;" />/
+            <?php print network_site_url(); ?>kategori/<input type="text" name="category-slug" id="category-slug" size="20" value="<?php print get_option('aller_most_popular_category'); ?>" aria-required="true" style="width:200px;" />/
           </div>
           <input type="submit" name="savesettings" value="Spara" class="button-primary" />
       </div>
