@@ -83,6 +83,12 @@ class AllerMostPopularCategory
       wp_die('Database error! Something went wrong.');
   }
   
+  /**
+   *  Save settings for Aller Most Popular.
+   *
+   *  @param array $input
+   *    Input from POST.
+   */
   public function save_settings($input) {
     $this->_validate($input);
     
@@ -91,6 +97,28 @@ class AllerMostPopularCategory
     else
       add_option('aller_most_popular_category', $input['category-slug']);
   }
+  
+  /**
+   *  First we check if we should run counter. Then we add javascript to foot with add_action.
+   */
+  public function run_counter() {
+    add_action('wp_footer', array($this, 'add_javascript'));
+  }
+  
+  /**
+   *  Add javascript, if correct category.
+   */
+  public function add_javascript() {
+    $category_slug = get_option('aller_most_popular_category');
+    if (empty($category_slug))
+      return;
+    
+    $category = get_the_category();
+    foreach($category as $cat) {
+      if ($cat->slug == $category_slug)
+        require_once(dirname(__FILE__) . "/templates/script.php");
+    }
+  }
 }
 
 // Instanciate object to start application.
@@ -98,4 +126,4 @@ $allerMostPopularCategory = new AllerMostPopularCategory($wpdb);
 if (is_admin()) {
   add_action('admin_menu', array($allerMostPopularCategory, 'add_admin_page'));
 }
-  
+$allerMostPopularCategory->run_counter();
