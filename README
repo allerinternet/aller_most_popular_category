@@ -1,0 +1,29 @@
+An ugly plugin for Wordpress, to enable most popular when using Varnish and such software.
+
+-- Small description of issue --
+Varnish is a tool to cache pretty hard. This makes it impossible to enable most popular stuff,
+since Varnish doesnt communicate with web- or mysql-server at all.
+
+A simple solution is to use Google Analytics for general most popular stuff, but now we want
+it for a specific category, and that category alone. There will be no mark on url, etc, so 
+Google Analytics doesn't make it any more.
+
+Licensed under European Union Public License (EUPL) version 1.1 that can be found at
+http://www.osor.eu/eupl
+
+-- Install --
+Copy content to aller-most-popular, inside wp-content/plugins/. Visit settings page in Wordpress
+administration for further instructions.
+
+If you use a custom place for your plugins, you will probably have to edit 
+aller-most-popular-count.php.
+
+-- Use --
+A widget, and use of templates will soon be available, probably in a few days.
+
+
+Please feel free to contact me if you have any suggestions for improvement.
+
+Best regards,
+Johannes Henrysson
+johannes.henrysson@aller.se
