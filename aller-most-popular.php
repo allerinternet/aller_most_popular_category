@@ -86,7 +86,7 @@ class AllerMostPopularCategory
   public function save_settings($input) {
     $this->_validate($input);
     
-    if (get_option('aller_most_popular_category'))
+    if (get_option('aller_most_popular_category') !== NULL)
       update_option('aller_most_popular_category', $input['category-slug']);
     else
       add_option('aller_most_popular_category', $input['category-slug']);
