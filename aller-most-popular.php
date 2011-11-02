@@ -146,7 +146,7 @@ class AllerMostPopularCategoryWidget extends WP_Widget
     $title = apply_filters('widget_title', $instance['title']);
     
     $list = $this->_get_list(get_option('aller_most_popular_category'));
-    var_dump($list);
+    
     // Load template, use of custom templates is possible.
     preg_match('%http://(?:www.)?([^/$]+)%', home_url(), $url);
     if (isset($url[1]) && file_exists(dirname(__FILE__) . "/templates/{$url[1]}-widget.php"))
@@ -193,12 +193,24 @@ class AllerMostPopularCategoryWidget extends WP_Widget
   private function _get_list($category_slug) {
     global $wpdb;
     
-    $sql = "SELECT url
-      FROM {$wpdb->prefix}aller_most_popular
-      WHERE category_slug='{$category_slug}'
-      ORDER BY views
+    $sql = "SELECT amp.url, p.post_title, p.post_content
+      FROM {$wpdb->prefix}aller_most_popular amp
+      INNER JOIN {$wpdb->prefix}posts p
+        ON (p.ID=amp.post_id AND p.post_status='publish')
+      WHERE amp.category_slug='{$category_slug}'
+      ORDER BY amp.views DESC, p.comment_count DESC
       LIMIT 10";
     $result = $wpdb->get_results($sql);
+    foreach($result as $r) {
+      preg_match('%img[^>]+src="([^"]+)"%si', $r->post_content, $image_url);
+      if (empty($image_url[1])) {
+        $r->image_url = '';
+        continue;
+      }
+      
+      $image_url = preg_replace('%-\d+x\d+(\..+)$%', '-40x40$1', $image_url[1]);
+      $r->image_url = $image_url;
+    }
     
     return $result;
   }
