@@ -1,5 +1,6 @@
 <?php
 /**
+ *  @file
  *  Plugin Name: Aller Most Popular
  *  Description: Enables most popular data for a specific category, even when using Varnish and such.
  *  Version: 0.1a
@@ -7,6 +8,10 @@
  *
  *  @package Wordpress 3
  *  @subpackage Aller Most Popular
+ */
+
+/**
+ *  Basic functions for Aller Most Popular, as well as render admin page etc.
  */
 class AllerMostPopularCategory
 {
@@ -121,9 +126,63 @@ class AllerMostPopularCategory
   }
 }
 
+/**
+ *  Create Aller Most Popular Category widget to show our flashy stuff.
+ */
+class AllerMostPopularCategoryWidget extends WP_Widget
+{
+  var $id = 'aller_most_popular_category_widget';
+  var $name = 'Aller Most Popular';
+  var $description = 'Show most popular from one category (set in Posts -> Aller Most Popular).';
+  
+  /**
+   *  Widget actual processes
+   */
+  function __construct() {
+    parent::WP_Widget($this->id, $this->name, array('description' => $this->description));
+  }
+  
+  /**
+   *  Outputs the content of the widget
+   *
+   *  @param array $args
+   *  @param $instance
+   */
+  function widget($args, $instance) {
+    extract($args);
+    $title = apply_filters('widget_title', $instance['title']);
+    
+    // Load template, use of custom templates is possible.
+    preg_match('%http://(?:www.)?([^/$]+)%', home_url(), $url);
+    if (isset($url[1]) && file_exists(dirname(__FILE__) . "/templates/{$url[1]}-widget.php"))
+      require_once(dirname(__FILE__) . "/templates/{$url[1]}-widget.php");
+    else
+      require_once(dirname(__FILE__) . "/templates/default-widget.php");
+  }
+  
+  /**
+   *  Outputs the options form on admin
+   *
+   *  @param $instance
+   */
+  function form($instance) {
+  }
+  
+  /**
+   *  Processes widget options to be saved
+   *
+   *  @param $new_instance
+   *  @param $old_instance
+   */
+  function update($new_instance, $old_instance) {
+    
+  }
+}
+
 // Instanciate object to start application.
 $allerMostPopularCategory = new AllerMostPopularCategory($wpdb);
 if (is_admin()) {
   add_action('admin_menu', array($allerMostPopularCategory, 'add_admin_page'));
 }
 $allerMostPopularCategory->run_counter();
+add_action('widgets_init', create_function('', 'register_widget("AllerMostPopularCategoryWidget");'));
