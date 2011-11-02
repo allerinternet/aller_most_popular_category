@@ -45,7 +45,7 @@ class AllerMostPopularCategory
     global $wpdb;
     
     $sql = "SHOW TABLES LIKE '{$wpdb->prefix}aller_most_popular'";
-    $result = $wpdb->get_results($sql, ARRAY_A);
+    $result = $wpdb->get_results($sql);
     if ($wpdb->num_rows < 1)
       return FALSE;
     else
@@ -70,11 +70,12 @@ class AllerMostPopularCategory
     
     $sql = "CREATE TABLE `{$wpdb->prefix}aller_most_popular` (
         `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `post_id` MEDIUMINT UNSIGNED NOT NULL,
         `url` VARCHAR( 255 ) NOT NULL,
         `views` SMALLINT UNSIGNED NOT NULL,
         `category_slug` VARCHAR( 255 ) NOT NULL,
         INDEX (`category_slug`),
-        UNIQUE (`url`))
+        UNIQUE (`url`, `post_id`))
       ENGINE = INNODB;";
     if (!$wpdb->query($sql))
       wp_die('Database error! Something went wrong.');
