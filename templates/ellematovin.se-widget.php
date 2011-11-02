@@ -11,9 +11,16 @@
  */
 ?>
 
+<style>
+.aller-most-popular-category a {
+  font-size: 10px;
+  color: #000;
+}
+</style>
+
 <?php print $before_widget; ?>
 
-<div <?php print 'style="padding: 10px; border: ' . get_option('aller_separator_width') . 'px ' . get_option('aller_separator_type') . ' ' . get_option('aller_color_separator') . '"'; ?>>
+<div class="aller-most-popular-category" <?php print 'style="padding: 10px; border: ' . get_option('aller_separator_width') . 'px ' . get_option('aller_separator_type') . ' ' . get_option('aller_color_separator') . '"'; ?>>
   <?php if (!empty($title)) : ?>
     <?php print $before_title . $title . $after_title; ?>
   <?php endif; ?>
@@ -38,7 +45,7 @@
               $l->post_title = substr($l->post_title, 0, 30) . '...';
             }
             print $l->post_title;
-          ?> &gt;&gt;
+          ?> <span style="color:#52afd3;">&gt;&gt;</span>
         </a>
       </p>
     </div>
