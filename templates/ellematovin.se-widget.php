@@ -45,7 +45,7 @@
               $l->post_title = substr($l->post_title, 0, 30) . '...';
             }
             print $l->post_title;
-          ?> <span style="color:#52afd3;">&gt;&gt;</span>
+          ?> <span style="color:#52afd3;"><b>»</b></span>
         </a>
       </p>
     </div>
