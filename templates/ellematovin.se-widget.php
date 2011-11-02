@@ -14,7 +14,7 @@
 <?php print $before_widget; ?>
 
 <div <?php print 'style="padding: 10px; border: ' . get_option('aller_separator_width') . 'px ' . get_option('aller_separator_type') . ' ' . get_option('aller_color_separator') . '"'; ?>>
-  <?php if (isset($title)) : ?>
+  <?php if (!empty($title)) : ?>
     <?php print $before_title . $title . $after_title; ?>
   <?php endif; ?>
   
