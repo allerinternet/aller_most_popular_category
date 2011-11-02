@@ -41,8 +41,8 @@
       <p style="text-transform:uppercase;">
         <a href="<?php print $l->url; ?>" title="Läs mer om <?php print $l->post_title; ?>">
           <?php
-            if (strlen($l->post_title) > 30) {
-              $l->post_title = substr($l->post_title, 0, 30) . '...';
+            if (strlen($l->post_title) > 50) {
+              $l->post_title = substr($l->post_title, 0, 50) . '...';
             }
             print $l->post_title;
           ?> <span style="color:#52afd3;"><b>»</b></span>
