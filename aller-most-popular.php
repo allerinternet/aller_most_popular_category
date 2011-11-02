@@ -97,7 +97,7 @@ class AllerMostPopularCategory
   }
   
   /**
-   *  First we check if we should run counter. Then we add javascript to foot with add_action.
+   *  Add javascript to footer. Check is note done here (Wordpress hasnt loaded functions yet).
    */
   public function run_counter() {
     add_action('wp_footer', array($this, 'add_javascript'));
@@ -108,7 +108,7 @@ class AllerMostPopularCategory
    */
   public function add_javascript() {
     $category_slug = get_option('aller_most_popular_category');
-    if (empty($category_slug))
+    if (empty($category_slug) || !is_single())
       return;
     
     $category = get_the_category();
