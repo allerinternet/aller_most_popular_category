@@ -22,7 +22,7 @@ $result = $wpdb->get_results($sql);
 if ($wpdb->num_rows > 0) {
   $sql = "UPDATE {$wpdb->prefix}aller_most_popular
     SET views=views+1
-    WHERE id={$result->id}";
+    WHERE id={$result[0]->id}";
 } else {
   $sql = "INSERT INTO {$wpdb->prefix}aller_most_popular
     SET views=1, url='{$url}', category_slug='{$cat}', post_id={$post_id}";
