@@ -22,11 +22,11 @@
     Inga objekt hittades.
   <?php endif; ?>
   
-  <img src="" alt="10-i-topp" />
+  <img src="http://ellematovin.se/wp-content/uploads/10-i-topp.jpg" alt="10-i-topp" />
   
   <?php foreach($list as $nr => $l) : ?>
     <div class="widget-hr" style="margin:0; clear:both;"></div>
-    <div style="height:45px; margin:4px 5px; overflow:hidden;">
+    <div style="height:45px; margin:4px 0; overflow:hidden;">
       <p style="float:left; font-size:45px; line-height:45px; width:48px; text-align:right;"><?php print ++$nr; ?></p>
       <?php if (!empty($l->image_url)) : ?>
         <img src="<?php print $l->image_url; ?>" alt="<?php print $l->post_title; ?>" style="height:40px;width:40px;float:left;margin:2px 10px;" />
