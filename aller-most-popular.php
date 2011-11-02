@@ -14,19 +14,7 @@
  *  Basic functions for Aller Most Popular, as well as render admin page etc.
  */
 class AllerMostPopularCategory
-{
-  private $wpdb;
-  
-  /**
-   *  Initialize Aller Most Popular. Kickstart important stuff!
-   */
-  function __construct($wpdb) {
-    if (!is_object($wpdb))
-      wp_die('Couldn\'t find database.');
-    else
-      $this->wpdb = $wpdb;
-  }
-  
+{  
   /**
    *  Add admin page.
    */
@@ -44,7 +32,7 @@ class AllerMostPopularCategory
     if (isset($_POST['savesettings']))
       $this->save_settings($_POST);
     
-    require_once(dirname(__FILE__) . "/templates/admin-page.php");
+    require(dirname(__FILE__) . "/templates/admin-page.php");
   }
   
   /**
@@ -54,9 +42,11 @@ class AllerMostPopularCategory
    *    TRUE/FALSE for yes/no
    */
   public function check_database() {
-    $sql = "SHOW TABLES LIKE '{$this->wpdb->prefix}aller_most_popular'";
-    $result = $this->wpdb->get_results($sql, ARRAY_A);
-    if ($this->wpdb->num_rows < 1)
+    global $wpdb;
+    
+    $sql = "SHOW TABLES LIKE '{$wpdb->prefix}aller_most_popular'";
+    $result = $wpdb->get_results($sql, ARRAY_A);
+    if ($wpdb->num_rows < 1)
       return FALSE;
     else
       return TRUE;
@@ -71,12 +61,14 @@ class AllerMostPopularCategory
    *  Create table for Aller Most Popular in database. (only if it doesn't exists)
    */
   public function update_database($input) {
+    global $wpdb;
+    
     $this->_validate($input);
     
     if ($this->check_database())
       wp_die('Database table already exists!');
     
-    $sql = "CREATE TABLE `{$this->wpdb->prefix}aller_most_popular` (
+    $sql = "CREATE TABLE `{$wpdb->prefix}aller_most_popular` (
         `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `url` VARCHAR( 255 ) NOT NULL,
         `views` SMALLINT UNSIGNED NOT NULL,
@@ -84,7 +76,7 @@ class AllerMostPopularCategory
         INDEX (`category_slug`),
         UNIQUE (`url`))
       ENGINE = INNODB;";
-    if (!$this->wpdb->query($sql))
+    if (!$wpdb->query($sql))
       wp_die('Database error! Something went wrong.');
   }
   
@@ -121,7 +113,7 @@ class AllerMostPopularCategory
     $category = get_the_category();
     foreach($category as $cat) {
       if ($cat->slug == $category_slug)
-        require_once(dirname(__FILE__) . "/templates/script.php");
+        require(dirname(__FILE__) . "/templates/script.php");
     }
   }
 }
@@ -152,12 +144,14 @@ class AllerMostPopularCategoryWidget extends WP_Widget
     extract($args);
     $title = apply_filters('widget_title', $instance['title']);
     
+    $list = $this->_get_list(get_option('aller_most_popular_category'));
+    var_dump($list);
     // Load template, use of custom templates is possible.
     preg_match('%http://(?:www.)?([^/$]+)%', home_url(), $url);
     if (isset($url[1]) && file_exists(dirname(__FILE__) . "/templates/{$url[1]}-widget.php"))
-      require_once(dirname(__FILE__) . "/templates/{$url[1]}-widget.php");
+      require(dirname(__FILE__) . "/templates/{$url[1]}-widget.php");
     else
-      require_once(dirname(__FILE__) . "/templates/default-widget.php");
+      require(dirname(__FILE__) . "/templates/default-widget.php");
   }
   
   /**
@@ -166,16 +160,46 @@ class AllerMostPopularCategoryWidget extends WP_Widget
    *  @param $instance
    */
   function form($instance) {
+    $title = ($instance) ? esc_attr($instance['title']) : '';
+    
+    require(dirname(__FILE__) . "/templates/admin-widget.php");
   }
   
   /**
    *  Processes widget options to be saved
    *
-   *  @param $new_instance
-   *  @param $old_instance
+   *  @param array $new_instance
+   *    New data.
+   *  @param array $old_instance
+   *    Old data.
+   *  @return array
+   *    Updated data to save.
    */
   function update($new_instance, $old_instance) {
+    $instance = $old_instance;
+    $instance['title'] = strip_tags($new_instance['title']);
     
+    return $instance;
+  }
+  
+  /**
+   *  Fetch most popular list from database.
+   *
+   *  @param string $category_slug
+   *  @return object
+   *    Result from database.
+   */
+  private function _get_list($category_slug) {
+    global $wpdb;
+    
+    $sql = "SELECT url
+      FROM {$wpdb->prefix}aller_most_popular
+      WHERE category_slug='{$category_slug}'
+      ORDER BY views
+      LIMIT 10";
+    $result = $wpdb->get_results($sql);
+    
+    return $result;
   }
 }
 
